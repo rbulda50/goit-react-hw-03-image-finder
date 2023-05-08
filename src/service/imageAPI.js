@@ -19,4 +19,8 @@ const imageAPI = async (value, page) => {
     return response.data;
 };
 
-export default { imageAPI };
+const API = {
+    imageAPI,
+}
+
+export default API;
