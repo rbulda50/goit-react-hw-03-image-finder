@@ -3,7 +3,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from "./ImageGallery";
 import Button from "./Button";
 import { Dna } from 'react-loader-spinner';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Container } from './App.styled.jsx';
 import API from '../service/imageAPI';
