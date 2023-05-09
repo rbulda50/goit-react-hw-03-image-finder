@@ -23,41 +23,42 @@ export class App extends Component {
       const prevValue = prevState.value;
       const { value, page } = this.state;
 
-      if (prevValue !== value) {
+      if (prevValue !== value || prevState.page !== page) {
         this.setState({ status: 'pending' });
 
         API.imageAPI(value, page)
-              .then(images => {
-                if (images.total === 0) {
-                  this.setState({ status: 'rejected' });
-                  return;
-                }
-              this.setState({ images: images.hits, status: 'resolved' });
-              this.setState(({page, loadedHits}) => ({ page: page + 1, loadedHits: loadedHits + images.hits.length }))
-            })
-            .catch(error => this.setState({ error, status: 'rejected' }))
+          .then(images => {
+            if (images.total === 0) {
+              this.setState({ status: 'rejected' });
+              return;
+            };
+            this.setState(({loadedHits}) => ({
+              images: page === 1 ? images.hits : [...this.state.images, ...images.hits],
+              status: 'resolved',
+              loadedHits: loadedHits + images.hits.length
+            }));
+          })
+          .catch(error => this.setState({
+            error,
+            status: 'rejected'
+          }))
       }
   };
 
   onSubmitForm = (value) => {
-    this.setState({ value, status: 'pending', page: 1, loadedHits: 0 })
+    this.setState({
+      value,
+      status: 'pending',
+      page: 1,
+      loadedHits: 0
+    })
   };
 
   loadMore = () => {
-    const { loadedHits, value, page } = this.state;
-
-    if (loadedHits > 500) {
-      toast.error('Картинки закінчились :(');
-      return;
-    };
-
-    this.setState({ status: 'pending' });
-    API.imageAPI(value, page)
-      .then(images => {
-        this.setState({ images: [...this.state.images, ...images.hits], status: 'resolved' })
-        this.setState(({page, loadedHits}) => ({ page: page + 1, loadedHits: loadedHits + images.hits.length }))
-      })
-      .catch(error => this.setState({ error, status: 'rejected' }))
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+      status: 'pending'
+    }));
   };
 
   render() {
@@ -92,7 +93,7 @@ export class App extends Component {
       return <Container>
         <Searchbar onSubmit={this.onSubmitForm} />
         <ImageGallery images={images} />
-        <Button onClick={this.loadMore} />
+        {this.state.images.length <= this.state.totalHits && <Button onClick={this.loadMore} />}
         <ToastContainer autoClose={2000} />
       </Container>
     };
