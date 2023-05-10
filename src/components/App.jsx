@@ -13,8 +13,7 @@ export class App extends Component {
     value: '',
     images: [],
     page: 1,
-    loadedHits: 0,
-    totalHits: 500,
+    totalHits: 1,
     error: null,
     status: 'idle',
   };
@@ -32,11 +31,11 @@ export class App extends Component {
               this.setState({ status: 'rejected' });
               return;
             };
-            this.setState(({loadedHits}) => ({
+            this.setState({
               images: page === 1 ? images.hits : [...this.state.images, ...images.hits],
+              totalHits: images.totalHits,
               status: 'resolved',
-              loadedHits: loadedHits + images.hits.length
-            }));
+            });
           })
           .catch(error => this.setState({
             error,
@@ -62,7 +61,7 @@ export class App extends Component {
   };
 
   render() {
-    const { status, images } = this.state;
+    const { status, images, totalHits } = this.state;
 
     if (status === 'idle') {
       return <Container>
@@ -73,8 +72,8 @@ export class App extends Component {
     
     if (status === 'pending') {
       return <Container>
-        <Searchbar onSubmit={this.onSubmitForm} />
-        <ImageGallery images={images} />
+        <Searchbar onSubmit={this.onSubmitForm} /> 
+        <ImageGallery images={images} /> 
         <Dna  visible={true}
               height="80"
               width="80"
@@ -93,7 +92,7 @@ export class App extends Component {
       return <Container>
         <Searchbar onSubmit={this.onSubmitForm} />
         <ImageGallery images={images} />
-        {this.state.images.length <= this.state.totalHits && <Button onClick={this.loadMore} />}
+        {images.length !== totalHits && <Button onClick={this.loadMore} />}
         <ToastContainer autoClose={2000} />
       </Container>
     };
