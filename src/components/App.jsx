@@ -49,7 +49,6 @@ export class App extends Component {
       value,
       status: 'pending',
       page: 1,
-      loadedHits: 0
     })
   };
 
@@ -85,7 +84,10 @@ export class App extends Component {
     };
 
     if (status === 'rejected') {
-      return <Searchbar onSubmit={this.onSubmitForm} />
+      return <Container>
+        <Searchbar onSubmit={this.onSubmitForm} />
+        <ImageGallery images={images} /> 
+      </Container>
     };
 
     if (status === 'resolved') {
